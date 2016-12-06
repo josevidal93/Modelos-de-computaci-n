@@ -1,0 +1,5 @@
+t0	2 1 2 1 0 0
+t1	0 2 1 0 1 0				Z_3 = {0, 1, 2}
+t2  2 0 0 2 1 1 			frontera nula
+t3  2 2 2 0 1 2				T(a_i^t+1) = sumatorio desde i=-1 hasta 1)%3
+

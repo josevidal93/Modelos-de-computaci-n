@@ -1,0 +1,7 @@
+# Funcion f(x)=4x       
+ Z1 <- 4
+(A1)  Z3 <- Z2+X1 
+        Z1--
+        Z2 <- Z3
+        IF  Z1 !=0 GOTO A1
+        Y <- Z3

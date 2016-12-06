@@ -1,0 +1,69 @@
+f:N -> f:N
+f(x)=4x
+
+Código L
+
+    Y <- 4*X1
+    
+    
+
+    Z1 <- 4
+    (A1) Z3 <- Z2+X1 
+    Z1--
+    Z2 <- Z3
+    IF Z1 !=0 GOTO A1
+    Y <- Z3
+    
+    
+    X1  Y
+    1   4
+    2   8
+    5   20
+    10  40
+    
+    
+
+f:N*N -> f:N
+f(X1,X2)=X1^X2
+
+
+  
+Z1 <- X2
+Y <- 1 
+IF Z1 != 0 GOTO A1
+IF X1 != 0 GOTO S
+(A2) GOTO A2 
+(A1) Y <- X1 * Y
+Z1--
+IF Z1 != 0 GOTO A1
+    
+    
+    
+f:N*N -> f:N
+f(X1,X2)==3x^3 − 6x^2 + 2
+
+(A) IF(X1=1) GOTO A
+Z1<-X*X
+Z2<-Z1
+Z1<-Z1*X
+Z1<-Z1*3
+Z2<-Z2*6
+
+Y<-Z1-Z2
+Y<- Y+2
+
+
+
+    
+f:N -> f:N
+f(X)==X!
+
+    Z1 <- X
+    Z2<-1
+    (A1) Z3 <- Z2*Z1
+    Z1--
+    Z2 <- Z3
+    IF Z1 !=0 GOTO A1
+    Y <- Z3
+    
+

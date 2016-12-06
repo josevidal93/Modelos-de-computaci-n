@@ -1,0 +1,14 @@
+Z1 <- X -1
+Z2 <- 0
+(A) IF(Z1>1) GOTO B
+	GOTO C2
+(B)	 Z2 <- X1 /Z1
+	Z3<-Z2*Z1
+	Z2<- X-Z3
+	Z1--
+	IF( Z2 = 0 ) GOTO C1
+	IF( Z2 >=1 ) GOTO A
+(C1)	Y <-0
+	GOTO S
+(C2)	Y <-1
+	GOTO S

@@ -1,0 +1,10 @@
+IF(X1 = 1) GOTO A1
+Z <- X1 /2
+Z2<-Z*2
+Z3<-X-Z2
+IF ( Z3 = 0 ) GOTO A1
+IF ( Z3 =1 ) GOTO A2
+(A1)  	Y<- 1
+	GOTO S
+(A2)  	 Y<- 0
+	GOTO S
