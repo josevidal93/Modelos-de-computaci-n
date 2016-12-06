@@ -37,10 +37,14 @@ public class paralellBelZab implements Runnable
 	}
 	
 	private static void acceptNextGeneration()	{
-		for(int i=0;i<3;++i)
-			for(int j=0;j<size;++j)
-				for(int k=0;k<size;++k)
-					reaccion[i][j][k] =siguiente_reaccion[i][j][k];
+		
+		
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < size; j++) {
+				System.arraycopy(siguiente_reaccion[i][j], 0, reaccion[i][j], 0, size);
+			}
+		}
+  
 	}
 
 		
