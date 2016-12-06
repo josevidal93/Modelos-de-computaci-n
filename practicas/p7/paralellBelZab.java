@@ -2,7 +2,6 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.Random;
 
 public class paralellBelZab implements Runnable
@@ -13,20 +12,20 @@ public class paralellBelZab implements Runnable
 	
 	private Random random;
 	
-	private static double[][][][] reaccion;
+	private static double[][][] reaccion;
+	private static double[][][] siguiente_reaccion;
+	
 	private static double alfa;
 	private static double beta;
 	private static double gamma;
 	
 	private static int size;
 	
-	private static int generacion,p,q=1;
 	
 	private static int nucleos;
 	private static ExecutorService threadPool;
 	private static Runnable[] tareas;
 	private static CyclicBarrier barrera;
-	private static ReentrantLock reentrant;
 	
 	private int inicio;
 	private int fin;
@@ -37,11 +36,21 @@ public class paralellBelZab implements Runnable
 		this.fin    = fin;
 	}
 	
+	private static void acceptNextGeneration()	{
+		for(int i=0;i<3;++i)
+			for(int j=0;j<size;++j)
+				for(int k=0;k<size;++k)
+					reaccion[i][j][k] =siguiente_reaccion[i][j][k];
+	}
+
+		
+
+	
 	public paralellBelZab(int size, double alfa, double beta, double gamma)
 	{
 		this.size = size;
-		reaccion   = new double[2][3][size][size];
-		generacion = 0;
+		reaccion   = new double[3][size][size];
+		siguiente_reaccion   = new double[3][size][size];
 		
 		this.alfa  = alfa;
 		this.beta  = beta;
@@ -51,7 +60,6 @@ public class paralellBelZab implements Runnable
 		threadPool = Executors.newFixedThreadPool(nucleos);
 		barrera    = new CyclicBarrier(nucleos + 1);
 		tareas     = new Runnable[nucleos];
-		reentrant  = new ReentrantLock();
 		
 		for (int i = 0; i < nucleos; ++i)
 		{
@@ -70,35 +78,32 @@ public class paralellBelZab implements Runnable
 
 	public void aleatorio()
 	{
-		reentrant.lock();
-		
-		generacion = 0;
-		
+				
 		for (int i = 0; i < size; ++i)
 		{
 			for (int j = 0; j < size; ++j)
 			{
-				reaccion[0][A][i][j] = random.nextDouble();
-				reaccion[0][B][i][j] = random.nextDouble();
-				reaccion[0][C][i][j] = random.nextDouble();
+				reaccion[A][i][j] = random.nextDouble();
+				reaccion[B][i][j] = random.nextDouble();
+				reaccion[C][i][j] = random.nextDouble();
 			}
 		}
 		
-		reentrant.unlock();
 	}
 		
 
 	public static void siguienteGeneracion()
-	{
-		reentrant.lock();
-		
+	{		
 		for (int i = 0; i < tareas.length; ++i)
 			threadPool.execute(tareas[i]);
 		
 			try
 			{
-				if (barrera.await() == 0)
-					++generacion;
+				barrera.await();
+				barrera.reset();
+				acceptNextGeneration();
+
+
 			}
 			catch (InterruptedException e)
 			{
@@ -111,8 +116,6 @@ public class paralellBelZab implements Runnable
 				System.out.println("Error: " + e.getMessage());
 			}
 		
-		
-		reentrant.unlock();
 	}
 	
 	private void subGeneracion()
@@ -125,9 +128,9 @@ public class paralellBelZab implements Runnable
 			{
 				concentracion = concentraciones(j, i);
 				
-				reaccion[(generacion+1) % 2][A][i][j] = parteFlotante(concentracion[A] * (1 + (alfa  * concentracion[B] - gamma * concentracion[C])));
-				reaccion[(generacion+1) % 2][B][i][j] = parteFlotante(concentracion[B] * (1 + (beta  * concentracion[C] - alfa  * concentracion[A])));
-				reaccion[(generacion+1) % 2][C][i][j] = parteFlotante(concentracion[C] * (1 + (gamma * concentracion[A] - beta  * concentracion[B])));
+				siguiente_reaccion[A][i][j] = parteFlotante(concentracion[A] * (1 + (alfa  * concentracion[B] - gamma * concentracion[C])));
+				siguiente_reaccion[B][i][j] = parteFlotante(concentracion[B] * (1 + (beta  * concentracion[C] - alfa  * concentracion[A])));
+				siguiente_reaccion[C][i][j] = parteFlotante(concentracion[C] * (1 + (gamma * concentracion[A] - beta  * concentracion[B])));
 			}
 		}
 	}
@@ -140,9 +143,9 @@ public class paralellBelZab implements Runnable
 		{
 			for (int j = -1; j <= 1; ++j)
 			{
-				concentracion[A] += reaccion[generacion % 2][A][mod(y+i, size)][mod(x+j, size)];
-				concentracion[B] += reaccion[generacion % 2][B][mod(y+i, size)][mod(x+j, size)];
-				concentracion[C] += reaccion[generacion % 2][C][mod(y+i, size)][mod(x+j, size)];
+				concentracion[A] += reaccion[A][mod(y+i, size)][mod(x+j, size)];
+				concentracion[B] += reaccion[B][mod(y+i, size)][mod(x+j, size)];
+				concentracion[C] += reaccion[C][mod(y+i, size)][mod(x+j, size)];
 			}
 		}
 		
@@ -160,16 +163,8 @@ public class paralellBelZab implements Runnable
 	
 	public static double[][][] mostrar()
 	{
-		reentrant.lock();
+		return siguiente_reaccion;
 		
-		try
-		{
-			return reaccion[generacion % 2];
-		}
-		finally
-		{
-			reentrant.unlock();
-		}
 	}
 	
 	public void run()
@@ -178,8 +173,7 @@ public class paralellBelZab implements Runnable
 			
 			try
 			{
-				if (barrera.await() == 0)
-					++generacion;
+				barrera.await();
 			}
 			catch (InterruptedException e)
 			{
